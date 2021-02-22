@@ -71,7 +71,7 @@ function App() {
 
     <div className="app">
 
-      {searchNav ? <nav className="navbar justify-content-between bg-light">
+      {searchNav ? <nav className="navbar justify-content-between">
         <div className="col-3 homeTitle">
           <div className="navLogo" onClick={goHome}>RW</div>
         </div>
