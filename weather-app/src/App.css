@@ -7,7 +7,7 @@
 
 .app {
     height: 90vh;
-    width: 100%;
+    width: 100vw;
     background-image: url(/src/assets/cloud-bg.webp);
     background-size: cover;
     background-position: center;
@@ -32,6 +32,9 @@
     font-size: 4rem;
     cursor: pointer;
     margin: auto;
+}
+
+.navLogo img {
     width: 4vw;
 }
 
@@ -133,7 +136,7 @@ main {
 }
 
 .errorMsg {
-    font-size: 2vw;
+    font-size: 1vw;
 }
 
 /* ------------------------------------- */
@@ -278,6 +281,7 @@ footer {
 
     .day {
         padding: 0;
+        height: 6.5rem;
         border-bottom: 1px solid #000;
         border-left: none;
         border-right: none;

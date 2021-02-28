@@ -87,8 +87,8 @@ function App() {
 
       {searchNav ? <nav className="navbar justify-content-between">
         <div className="col-3 homeTitle">
-          <div onClick={goHome}>
-            <img src={logo} alt="logo" className="navLogo"/>
+          <div onClick={goHome} className="navLogo">
+            <img src={logo} alt="logo"/>
             <h2>REACTIVE WEATHER</h2>
           </div>
         </div>
