@@ -1,10 +1,11 @@
 import './App.css';
 import React, { useState } from 'react';
+import logo from './assets/logo.png';
+
 const api = {
     key: "",
     base: "https://api.openweathermap.org/data/2.5/",
-  }
-
+}
 
 function App() {
 
@@ -12,6 +13,7 @@ function App() {
   const [home, showHome] = useState(true);
   const [searchNav, showNav] = useState(false);
   const [results, showResults] = useState(false);
+  const [error, showError] = useState(false);
 
   const [query, setQuery] = useState("");
   const [weather, setWeather] = useState({});
@@ -21,10 +23,11 @@ function App() {
   const goHome = evt => {
     showHome(true); showNav(false); showResults(false);
   }
+  
+
   // SEARCH FUNCTIONS
-  const search = evt => {
-    if (evt.key === "Enter") {
-      fetch(`${api.base}forecast?q=${query},US&units=imperial&APPID=${api.key}`)
+  function search() {
+    fetch(`${api.base}forecast?q=${query},US&units=imperial&APPID=${api.key}`)
         .then(res =>res.json())
         .then(future => {
           setFuture(future);
@@ -34,24 +37,35 @@ function App() {
       .then(current => {
         setWeather(current);
         setQuery('');
-        showHome(false); showNav(true); showResults(true);
+        showHome(false); showNav(true); showResults(true); showError(false);
       });
-    }
+  }
+
+  const validate = evt => {
+    fetch(`${api.base}forecast?q=${query},US&units=imperial&APPID=${api.key}`)
+      .then(function (res) {
+        res.json();
+        if (res.ok) {
+          search();
+          showError(false);
+        } else {
+          showError(true);
+        }
+    })
   }
 
   const searchBtn = evt => {
-    fetch(`${api.base}forecast?q=${query},US&units=imperial&APPID=${api.key}`)
-        .then(res =>res.json())
-        .then(future => {
-          setFuture(future);
-        })
-    fetch(`${api.base}weather?q=${query},US&units=imperial&APPID=${api.key}`)
-      .then(res =>res.json())
-      .then(current => {
-        setWeather(current);
-        setQuery('');
-        showHome(false); showNav(true); showResults(true);
-      })
+    if (evt.key === "Enter") {
+      fetch(`${api.base}forecast?q=${query},US&units=imperial&APPID=${api.key}`)
+      .then(function (res) {
+        res.json();
+        if (res.ok) {
+          search();
+        } else {
+          showError(true);
+        }
+    })
+    }
   }
   
   // GET DATES
@@ -73,7 +87,10 @@ function App() {
 
       {searchNav ? <nav className="navbar justify-content-between">
         <div className="col-3 homeTitle">
-          <div className="navLogo" onClick={goHome}>RW</div>
+          <div onClick={goHome}>
+            <img src={logo} alt="logo" className="navLogo"/>
+            <h2>REACTIVE WEATHER</h2>
+          </div>
         </div>
         <div className="navRight col-9 d-flex justify-content-start align-items-center">
           <input
@@ -81,11 +98,16 @@ function App() {
             placeholder="Search by City or Zip Code"
             className="search-bar col-6 text-center"
             onChange={e => setQuery(e.target.value)}
-            value={query}s
-            onKeyPress={search}
+            value={query}
+            onKeyPress={searchBtn}
           />
-          <button className="searchButton" onClick={searchBtn}><i className="fas fa-search"></i></button>
+          <button className="searchButton" onClick={validate}><i className="fas fa-search"></i></button>
         </div>
+        {error ? <div className="error col-7 d-flex justify-content-center" id="error">
+          <span className="errorMsg">
+            Error! Location not found. Please enter a US zip code or city name or check your spelling
+          </span>
+        </div> : null}
       </nav> : null}
 
       <main className="d-flex justify-content-center align-items-center">
@@ -95,27 +117,29 @@ function App() {
         {/* ------------ */}
         {home ? <section className="home">
 
-            <div className="container text-center">
-              <h1 className="homeTitle">Reactive Weather</h1>
-
-              <input
-                type="text"
-                placeholder="Search by City or Zip Code"
-                className="search-bar col-7 d-block text-center"
-                onChange={e => setQuery(e.target.value)}
-                value={query}
-                onKeyPress={search}
-              />
+          <div className="container text-center">
+            <img src={logo} alt="logo" className="homeLogo"/>
+            <h1 className="homeTitle">Reactive Weather</h1>
             
-              <div className="error col-7 d-flex justify-content-center" id="error">
-                <span className="errorMsg">
-                  Error! Location not found. Please enter a US zip code or city name or check your spelling
+            <input
+              type="text"
+              placeholder="Search by City or Zip Code"
+              className="search-bar col-7 d-block text-center"
+              onChange={e => setQuery(e.target.value)}
+              value={query}
+              onKeyPress={searchBtn}
+            />
+          
+            {error ? <div className="error col-7 d-flex justify-content-center" id="error">
+              <span className="errorMsg">
+                Error! Location not found. Please enter a US zip code or city name or check your spelling
                 </span>
-              </div>
-              <button className="searchButton" onClick={searchBtn}>
-                SEARCH
-              </button>
-            </div>
+            </div> : null}
+              
+            <button className="searchButton" onClick={validate}>
+              SEARCH
+            </button>
+          </div>
         </section> : null}
         
 
